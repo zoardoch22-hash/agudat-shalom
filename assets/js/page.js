@@ -21,6 +21,11 @@ Promise.all([pagesData, ready]).then(([pages]) => {
   $('page-lead').textContent = page.description || '';
   $('page-lead').hidden = !page.description;
   $('page-body').replaceChildren(renderMarkdown(page.body || ''));
+  // מיפוי לעריכה ויזואלית (לפי slug – עמיד לשינוי סדר העמודים)
+  const ptr = `pages.json#/pages/[slug=${page.slug}]`;
+  $('page-title').dataset.edit = `${ptr}/title`; $('page-title').dataset.editLabel = 'כותרת העמוד';
+  $('page-lead').dataset.edit = `${ptr}/description`; $('page-lead').dataset.editLabel = 'תיאור קצר (אופציונלי)';
+  $('page-body').dataset.edit = `${ptr}/body`; $('page-body').dataset.editType = 'md';
   const files = (page.files || []).filter((f) => f && safeSrc(f.file));
   if (files.length) {
     $('page-files').replaceChildren(el('h2', { text: 'קבצים להורדה' }),

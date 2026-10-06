@@ -77,21 +77,24 @@ function initNav() {
 function fillCommon(cfg) {
   document.querySelectorAll('[data-cfg="address"]').forEach((n) => {
     n.textContent = cfg.address;
+    n.dataset.edit = 'settings.json#/address'; n.dataset.editLabel = 'כתובת בית הכנסת';
     n.classList.toggle('placeholder', isPlaceholder(cfg.address));
   });
   document.querySelectorAll('[data-cfg="years"]').forEach((n) => { n.textContent = String(new Date().getFullYear() - cfg.foundedYear); });
   document.querySelectorAll('[data-cfg="year"]').forEach((n) => { n.textContent = String(new Date().getFullYear()); });
 
   document.querySelectorAll('[data-cfg="footer-contacts"]').forEach((ul) => {
-    ul.replaceChildren(...cfg.contacts.map((c) => el('li', {},
-      `${c.name}: `, el('a', { href: telLink(c.phone), class: 'ltr', text: c.phone }),
+    ul.replaceChildren(...cfg.contacts.map((c, i) => el('li', {},
+      el('span', { 'data-edit': `settings.json#/contacts/${i}/name`, 'data-edit-label': 'שם איש קשר', text: c.name }), ': ',
+      el('a', { href: telLink(c.phone), class: 'ltr', text: c.phone, 'data-edit': `settings.json#/contacts/${i}/phone`, 'data-edit-label': 'טלפון' }),
       c.whatsapp ? [' · ', el('a', { href: waLink(c.intl), rel: 'noopener', target: '_blank' }, 'וואטסאפ', newWin())] : null)));
   });
 
   document.querySelectorAll('[data-cfg="contact-cards"]').forEach((box) => {
-    box.replaceChildren(...cfg.contacts.map((c) => el('div', { class: 'card accent contact-card' },
-      el('h3', { text: c.name }), c.role ? el('p', { class: 'muted small', text: c.role }) : null,
-      el('a', { class: 'phone', href: telLink(c.phone), text: c.phone }),
+    box.replaceChildren(...cfg.contacts.map((c, i) => el('div', { class: 'card accent contact-card' },
+      el('h3', { text: c.name, 'data-edit': `settings.json#/contacts/${i}/name`, 'data-edit-label': 'שם איש קשר' }),
+      el('p', { class: 'muted small', text: c.role || '', hidden: !c.role, 'data-edit': `settings.json#/contacts/${i}/role`, 'data-edit-label': 'תפקיד' }),
+      el('a', { class: 'phone', href: telLink(c.phone), text: c.phone, 'data-edit': `settings.json#/contacts/${i}/phone`, 'data-edit-label': 'טלפון' }),
       el('div', { class: 'actions' },
         el('a', { class: 'btn btn-navy btn-sm', href: telLink(c.phone) }, icon('phone'), 'חיוג'),
         c.whatsapp ? el('a', { class: 'btn btn-wa btn-sm', href: waLink(c.intl), target: '_blank', rel: 'noopener' }, icon('wa'), 'וואטסאפ', newWin()) : null))));
@@ -124,7 +127,10 @@ export const pagesData = getJSON('pages.json').then((d) => (Array.isArray(d?.pag
 function applyContent(c, cfg) {
   const years = String(new Date().getFullYear() - cfg.foundedYear);
   const get = (key) => { const [pg, k] = key.split('.'); const v = c[pg]?.[k]; return typeof v === 'string' && v.trim() ? v.replaceAll('{years}', years) : null; };
+  // מיפוי לעריכה ויזואלית: "page.key" → assets/data/content/<page>.json, שדה key
+  const bind = (n, key, type) => { const [pg, k] = key.split('.'); n.dataset.edit = `content/${pg}.json#/${k}`; if (type) n.dataset.editType = type; };
   document.querySelectorAll('[data-t]').forEach((n) => {
+    bind(n, n.dataset.t);
     const v = get(n.dataset.t);
     if (v == null) return;
     n.textContent = v;
@@ -135,7 +141,7 @@ function applyContent(c, cfg) {
     const v = get(n.dataset.tWa);
     if (v) n.href = waLink(v.replace(/\D/g, '').replace(/^0/, '972'));
   });
-  document.querySelectorAll('[data-md]').forEach((n) => { const v = get(n.dataset.md); if (v != null) n.replaceChildren(renderMarkdown(v)); });
+  document.querySelectorAll('[data-md]').forEach((n) => { bind(n, n.dataset.md, 'md'); const v = get(n.dataset.md); if (v != null) n.replaceChildren(renderMarkdown(v)); });
 }
 
 /* ---------- עמודים כלליים מהמערכת: הוספה אוטומטית לתפריט ---------- */
@@ -161,3 +167,16 @@ export const ready = loadConfig().then(async (cfg) => {
 pagesData.then(addPagesToNav);
 initNav();
 initA11y();
+
+/* ---------- כניסת מנהל / מצב עריכה ---------- */
+// קוד העריכה נטען רק בלחיצה על "כניסת מנהל" או כשיש התחברות מנהל שמורה בדפדפן – מבקרים רגילים לא טוענים אותו.
+const loadEditor = () => import('./edit/boot.js');
+document.addEventListener('click', (e) => {
+  const a = e.target.closest?.('[data-admin-login]');
+  if (!a) return;
+  e.preventDefault();
+  loadEditor().then((m) => m.init({ openLogin: true })).catch(() => { location.href = a.href; });
+});
+let hasAdminSession = false;
+try { hasAdminSession = !!localStorage.getItem('gotrue.user'); } catch { /* localStorage חסום */ }
+if (hasAdminSession) Promise.all([ready, pagesData]).then(() => setTimeout(() => loadEditor().then((m) => m.init()).catch(() => {}), 0));
