@@ -62,6 +62,45 @@ collections:
               - { name: hebcalCity, label: "שם העיר באנגלית (hebcal, למשל Tel Aviv / Jerusalem / Haifa)", widget: string, required: false }
               - { name: candleLightingMins, label: "הדלקת נרות – דקות לפני השקיעה (משמש רק בחישוב hebcal; בתצוגה – לפי לוח המאור)", widget: number, value_type: int, required: false }
           - { name: season, label: "קיץ/חורף", widget: select, options: [{ label: "אוטומטי (שעון קיץ)", value: auto }, { label: קיץ, value: summer }, { label: חורף, value: winter }] }
+          - name: rules
+            label: "כללי זמני התפילות (דקות ביחס לנץ/שקיעה של לוח המאור)"
+            widget: object
+            collapsed: true
+            fields:
+              - name: weekday
+                label: ימי חול
+                widget: object
+                fields:
+                  - { name: shacharitBeforeNetzMins, label: "שחרית – דקות לפני הנץ", widget: number, value_type: int, min: 0, max: 120 }
+                  - name: minchaGedola
+                    label: מנחה גדולה
+                    widget: object
+                    fields:
+                      - { name: summer, label: "קיץ (HH:MM)", widget: string, pattern: ['^([01][0-9]|2[0-3]):[0-5][0-9]$', "שעה בפורמט HH:MM"] }
+                      - { name: winter, label: "חורף (HH:MM) – גם ביום שישי", widget: string, pattern: ['^([01][0-9]|2[0-3]):[0-5][0-9]$', "שעה בפורמט HH:MM"] }
+                  - { name: minchaKetanaBeforeShkiaMins, label: "מנחה קטנה – דקות לפני השקיעה", widget: number, value_type: int, min: 0, max: 120 }
+                  - { name: lessonBeforeMinchaMins, label: "קיץ: שיעור – דקות לפני מנחה", widget: number, value_type: int, min: 0, max: 180 }
+              - name: friday
+                label: ערב שבת / ערב חג
+                widget: object
+                fields:
+                  - { name: minchaKetanaBeforeShkiaMins, label: "מנחה – דקות לפני השקיעה (ללא עיגול)", widget: number, value_type: int, min: 0, max: 120 }
+                  - { name: kabbalatShabbatBeforeShkiaMins, label: "קבלת שבת – דקות לפני השקיעה", widget: number, value_type: int, min: 0, max: 60 }
+              - name: shabbat
+                label: שבת ויום טוב
+                widget: object
+                fields:
+                  - { name: shacharit, label: "שחרית (HH:MM)", widget: string, pattern: ['^([01][0-9]|2[0-3]):[0-5][0-9]$', "שעה בפורמט HH:MM"] }
+                  - { name: shacharitNote, label: "הערה לשחרית", widget: string, required: false }
+                  - name: minchaGedola
+                    label: מנחה גדולה
+                    widget: object
+                    fields:
+                      - { name: summer, label: "קיץ (HH:MM)", widget: string, pattern: ['^([01][0-9]|2[0-3]):[0-5][0-9]$', "שעה בפורמט HH:MM"] }
+                      - { name: winter, label: "חורף (HH:MM)", widget: string, pattern: ['^([01][0-9]|2[0-3]):[0-5][0-9]$', "שעה בפורמט HH:MM"] }
+                  - { name: minchaKetanaBeforeShkiaMins, label: "מנחה קטנה – דקות לפני השקיעה (ואז עיגול לעשרות: 0–4 מטה, 5 נשאר, 6–9 מעלה)", widget: number, value_type: int, min: 0, max: 120 }
+                  - { name: lessonBeforeMinchaKetanaMins, label: "שיעור – דקות לפני מנחה קטנה המעוגלת", widget: number, value_type: int, min: 0, max: 180 }
+                  - { name: lessonTeacher, label: "שם מוסר השיעור", widget: string }
 
   # ---- טקסטים של העמודים הקיימים ----
   - name: texts
