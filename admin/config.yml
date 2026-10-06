@@ -60,7 +60,7 @@ collections:
               - { name: latitude, label: קו רוחב, widget: number, value_type: float }
               - { name: longitude, label: קו אורך, widget: number, value_type: float }
               - { name: hebcalCity, label: "שם העיר באנגלית (hebcal, למשל Tel Aviv / Jerusalem / Haifa)", widget: string, required: false }
-              - { name: candleLightingMins, label: "הדלקת נרות – דקות לפני השקיעה (ריק = לפי מנהג העיר)", widget: number, value_type: int, required: false }
+              - { name: candleLightingMins, label: "הדלקת נרות – דקות לפני השקיעה (משמש רק בחישוב hebcal; בתצוגה – לפי לוח המאור)", widget: number, value_type: int, required: false }
           - { name: season, label: "קיץ/חורף", widget: select, options: [{ label: "אוטומטי (שעון קיץ)", value: auto }, { label: קיץ, value: summer }, { label: חורף, value: winter }] }
 
   # ---- טקסטים של העמודים הקיימים ----
