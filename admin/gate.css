@@ -1,0 +1,160 @@
+/* שער בחירה אחרי התחברות ב-/admin – ללא תלות ב-CSS של Decap */
+.ag-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(255, 210, 63, 0.18), transparent 50%),
+    linear-gradient(160deg, #0a1a33 0%, #0f2547 55%, #1a3358 100%);
+  color: #1d2433;
+  font-family: system-ui, "Segoe UI", Tahoma, Arial, sans-serif;
+  box-sizing: border-box;
+}
+.ag-gate[hidden] { display: none !important; }
+.ag-gate *, .ag-gate *::before, .ag-gate *::after { box-sizing: border-box; }
+
+.ag-gate-card {
+  width: min(100%, 440px);
+  background: #fffdf8;
+  border: 1px solid #e2d9c4;
+  border-radius: 16px;
+  padding: 1.7rem 1.5rem 1.45rem;
+  box-shadow: 0 18px 50px -16px rgba(0, 0, 0, 0.45);
+}
+
+.ag-gate-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+  color: #0f2547;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+.ag-gate-brand img {
+  width: 40px;
+  height: 40px;
+  flex: none;
+}
+
+.ag-gate-card h1 {
+  margin: 0 0 0.35rem;
+  font-size: 1.45rem;
+  color: #0a1a33;
+  line-height: 1.25;
+}
+
+.ag-gate-user {
+  margin: 0 0 0.85rem;
+  color: #4a5160;
+  font-size: 0.95rem;
+}
+.ag-gate-user bdi {
+  font-weight: 700;
+  color: #0f2547;
+  unicode-bidi: isolate;
+}
+
+.ag-gate-explain {
+  margin: 0 0 1.2rem;
+  color: #4a5160;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.ag-gate-actions {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.ag-gate-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 48px;
+  padding: 0.65rem 1.2rem;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  text-align: center;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.ag-gate-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px -8px rgba(10, 26, 51, 0.45);
+}
+.ag-gate-btn:focus-visible {
+  outline: 3px solid #0a1a33;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px #ffd23f;
+}
+.ag-gate-btn-primary {
+  background: linear-gradient(180deg, #ffd23f, #e6b800);
+  color: #0a1a33;
+}
+.ag-gate-btn-secondary {
+  background: #0f2547;
+  color: #fff;
+}
+.ag-gate-btn-secondary:focus-visible {
+  outline-color: #ffd23f;
+  box-shadow: 0 0 0 6px rgba(15, 37, 71, 0.35);
+}
+
+.ag-gate-note {
+  margin: 1rem 0 0;
+  font-size: 0.85rem;
+  color: #5d6677;
+  line-height: 1.45;
+}
+
+/* קישור בעמוד התחברות של Decap/Identity – לפני בחירה */
+.ag-gate-hint {
+  position: fixed;
+  z-index: 2147482000;
+  inset-inline: 0;
+  bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 0.85rem;
+  padding: 0.75rem 1rem;
+  background: #fffdf8;
+  border-top: 1px solid #e2d9c4;
+  box-shadow: 0 -8px 24px -16px rgba(10, 26, 51, 0.35);
+  font-family: system-ui, "Segoe UI", Tahoma, Arial, sans-serif;
+  font-size: 0.95rem;
+  color: #4a5160;
+}
+.ag-gate-hint[hidden] { display: none !important; }
+.ag-gate-hint a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffd23f, #e6b800);
+  color: #0a1a33;
+  font-weight: 700;
+  text-decoration: none;
+}
+.ag-gate-hint a:focus-visible {
+  outline: 3px solid #0a1a33;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px #ffd23f;
+}
+.ag-gate-hint-text { max-width: 36rem; }
+
+@media (max-width: 520px) {
+  .ag-gate-card { padding: 1.35rem 1.15rem 1.2rem; }
+  .ag-gate-hint { flex-direction: column; text-align: center; }
+}

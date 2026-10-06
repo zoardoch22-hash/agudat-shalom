@@ -48,7 +48,7 @@
     form.hidden = true;
     missing.hidden = true;
     success.hidden = false;
-    try { document.getElementById('sp-go-admin').focus(); } catch (e) { /* ignore */ }
+    try { (document.getElementById('sp-go-visual') || document.getElementById('sp-go-admin')).focus(); } catch (e) { /* ignore */ }
   }
 
   function tokenDetails(t) {
