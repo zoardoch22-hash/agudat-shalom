@@ -25,8 +25,9 @@
 | `assets/vendor/hebcal-core.min.js` | ‏@hebcal/core v6.11.1 מאוחסן מקומית (GPL-2.0) |
 | `assets/fonts/` | Frank Ruhl Libre ו-Heebo מאוחסנים מקומית (OFL) – ללא Google Fonts חיצוני |
 | `admin/` | ממשק ניהול Decap CMS v3.16.3 + Netlify Identity widget v2.0.3 (מקומי, עם SRI) |
+| `assets/js/edit/*.js`, `assets/css/edit.css` | מצב עריכה ויזואלי (נטען רק אחרי התחברות מנהל – ראו למטה) |
 | `netlify.toml` | כותרות אבטחה (CSP, HSTS, וכו') |
-| `tests/` | בדיקת חישוב הזמנים + שרת מקומי שמחיל את הכותרות |
+| `tests/` | בדיקת חישוב הזמנים, תוכן, נגישות, מצב עריכה + שרת מקומי שמחיל את הכותרות (ו-mock של Netlify Identity/Git Gateway) |
 
 ## עדכון פרטים
 עורכים את `assets/js/config.js` (או את `assets/data/settings.json`, או דרך `/admin`).
@@ -53,6 +54,19 @@ node tools/scrape-maor.mjs --from 2028-01-01 --to 2028-12-31   # בקשה אחת
 ```
 הסקריפט ממזג את הימים החדשים לקובץ הקיים, ומזהיר אם ערך הדלקה/צאת לא תואם לשקיעה של הלוח.
 
+## עריכה ויזואלית (מצב עריכה)
+1. בתחתית כל עמוד: **„כניסת מנהל”** → אימייל וסיסמה של Netlify Identity (אותו חשבון של `/admin`).
+2. בוחרים **„עריכה ויזואלית של האתר”** (או „מערכת הניהול המלאה” = Decap ב-`/admin/`).
+3. בראש העמוד מופיע סרגל **„מצב עריכה”**. טקסט שאפשר לערוך מסומן במסגרת במעבר עכבר/מיקוד – לוחצים ומקלידים. בטקסט מעוצב: מודגש / כותרת / רשימה / קישור / תמונה (תמונה חדשה – חובה תיאור).
+4. **„שמירה”** (או Ctrl+S) → נוצר commit אחד ב-GitHub דרך Git Gateway, והאתר מתעדכן בעוד כדקה. „ביטול שינויים” מחזיר את מה שנשמר; „יציאה ממצב עריכה” שואלת אם לשמור.
+5. כל עוד המנהל מחובר מופיע כפתור קטן **„✎ עריכת העמוד”**. מצב העריכה נשמר במעבר בין עמודים (באותה לשונית).
+
+* זמני התפילות מחושבים ואינם ניתנים לעריכה כאן – באזורים האלה מופיע קישור ל**כללי חישוב הזמנים** ב-`/admin` (הגדרות → `rules`).
+* כל אלמנט עריך מסומן `data-edit="<קובץ תחת assets/data>#<JSON pointer>"` (למשל `content/home.json#/heroLead`, `pages.json#/pages/[slug=updates]/body`), עם `data-edit-type` = `text` / `md` / `url`.
+* השמירה מחילה את השינויים מחדש על הגרסה העדכנית במאגר (כך שינוי שנעשה בינתיים ב-`/admin` לא נדרס), עם ניסיון חוזר אם מישהו שמר באותו רגע. אם פג תוקף ההתחברות – מופיע חלון התחברות והשינויים נשמרים אחריו.
+* אבטחה: קוד העריכה נטען רק אם יש התחברות; מבקרים רגילים לא מורידים אותו ולא פונים ל-`/.netlify`. אין מקורות צד-שלישי ולא נדרש שינוי ב-CSP (`connect-src 'self'`). תמונות נשמרות ב-`assets/uploads/` (מוקטנות ל-1600px).
+* דרישות ב-Netlify: Identity (Invite only) + Git Gateway מופעלים, הענף `main`.
+
 ## בדיקות
 ```bash
 npm i                                      # תלויות לבדיקות בלבד (האתר עצמו ללא תלויות)
@@ -60,7 +74,12 @@ node tests/schedule.test.mjs               # זמני לוח המאור (כול�
 node tests/content.test.mjs                # תוכן, תצורת Decap, אין inline/סודות
 python3 tests/serve-with-headers.py 8765 & # שרת מקומי עם כותרות ה-CSP
 node tests/a11y.test.mjs                   # axe-core בכל העמודים × 4 מצבי תצוגה + תפריט פתוח, מקלדת, הגדלה 200%/400%
+
+# מצב עריכה – מול mock מקומי של Netlify Identity + Git Gateway (מאגר בזיכרון, לא נוגע ב-GitHub)
+python3 tests/serve-with-headers.py 8770 --mock-netlify &
+BASE=http://127.0.0.1:8770/ node tests/edit.test.mjs   # SHOTS=<תיקייה> לצילומי מסך
 ```
+במצב mock אפשר גם להיכנס ידנית ב-http://127.0.0.1:8770/ עם `admin@example.test` / `test-pass-123`.
 בדיקת Decap מקומית (ללא Netlify): `npx decap-server` בתיקייה שהיא מאגר git, ו-`python3 tests/serve-with-headers.py 8766 --local-cms`, ואז http://localhost:8766/admin/.
 
 ## נגישות

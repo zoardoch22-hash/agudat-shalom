@@ -6,7 +6,9 @@
   "scripts": {
     "test": "node tests/schedule.test.mjs && node tests/content.test.mjs",
     "test:a11y": "node tests/a11y.test.mjs",
-    "serve": "python3 tests/serve-with-headers.py 8080"
+    "serve": "python3 tests/serve-with-headers.py 8080",
+    "test:edit": "node tests/edit.test.mjs",
+    "serve:mock": "python3 tests/serve-with-headers.py 8770 --mock-netlify"
   },
   "devDependencies": {
     "axe-core": "4.13.0",

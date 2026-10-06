@@ -79,7 +79,7 @@
     </div>
     <div class="card">
       <h2 class="h3like" data-t="times.zmanimTitle">זמני היום</h2>
-      <div class="zman-grid" id="zmanim"></div>
+      <div class="zman-grid" id="zmanim" data-computed></div>
       <p class="small muted">מקור הזמנים: <b id="zmanim-source">לפי לוח המאור – אופק תל אביב</b> · הדלקת נרות <span id="loc-candle">20</span> דק׳ לפני השקיעה</p>
     </div>
   </div>
@@ -89,15 +89,15 @@
   <div class="wrap grid grid-2">
     <article class="card accent" aria-labelledby="today-title">
       <h2 id="today-title">סדר היום</h2>
-      <div id="today-list"><p class="loading">מחשב…</p></div>
+      <div id="today-list" data-computed><p class="loading">מחשב…</p></div>
       <noscript><p class="note">לחישוב הזמנים יש לאפשר JavaScript בדפדפן.</p></noscript>
     </article>
     <article class="card accent" aria-labelledby="shabbat-title">
       <p class="badge" data-t="times.shabbatBadge">השבת הקרובה</p>
       <h2 id="shabbat-title">שבת קודש</h2>
       <p class="muted small" id="shabbat-date"></p>
-      <div class="zman-grid zman-3" id="shabbat-zmanim"></div>
-      <div id="shabbat-list"></div>
+      <div class="zman-grid zman-3" id="shabbat-zmanim" data-computed></div>
+      <div id="shabbat-list" data-computed></div>
     </article>
   </div>
 </section>
@@ -105,7 +105,7 @@
 <section class="section section-alt" aria-labelledby="week-title">
   <div class="wrap">
     <div class="section-head"><p class="kicker" data-t="times.weekKicker">7 הימים הקרובים</p><h2 data-t="times.weekTitle" id="week-title">לוח שבועי</h2></div>
-    <div class="week" id="week"></div>
+    <div class="week" id="week" data-computed></div>
     <p class="small muted">חושב לאחרונה: <span id="updated">—</span> · הדף מתעדכן אוטומטית בחצות.</p>
     <p class="small muted" data-t="times.rulesNote">שחרית בחול – 40 דק׳ לפני הנץ; מנחה קטנה בחול – 25 דק׳ לפני השקיעה; ערבית בחול – בשקיעה. ערב שבת: מנחה קטנה – 40 דק׳ לפני השקיעה, קבלת שבת – 15 דק׳ לפני השקיעה. בשבת: מנחה קטנה – 50 דק׳ לפני השקיעה, בעיגול לעשרות דקות (ספרה 0–4 – מטה, 5 – נשאר, 6–9 – מעלה), שיעור – שעה לפני מנחה קטנה, ערבית – בצאת השבת. ערב חג ויום טוב – כערב שבת וכשבת. הנץ (זריחה נראית), השקיעה, הדלקת הנרות וצאת השבת – לפי לוח המאור, אופק תל אביב. הזמנים עשויים להשתנות בהתאם להודעות בית הכנסת.</p>
   </div>
@@ -137,7 +137,7 @@
     </div>
   </div>
   <div class="wrap footer-bottom">
-    <p>© <span data-cfg="year">2026</span> בית הכנסת אגודת שלום · <a href="accessibility.html">הצהרת נגישות</a></p>
+    <p>© <span data-cfg="year">2026</span> בית הכנסת אגודת שלום · <a href="accessibility.html">הצהרת נגישות</a> · <a href="admin/" class="admin-link" data-admin-login>כניסת מנהל</a></p>
     <p data-t="common.footerNote">הזמנים לפי לוח המאור (אופק תל אביב) ועשויים להשתנות – יש לעקוב אחר הודעות בית הכנסת.</p>
   </div>
 </footer>
