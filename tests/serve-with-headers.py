@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 """שרת בדיקה מקומי שמחיל את הכותרות מ-netlify.toml (כדי לבדוק את ה-CSP לפני העלאה).
 שימוש: python3 tests/serve-with-headers.py [port] [--local-cms]   (מתוך תיקיית האתר)
---local-cms: לבדיקת Decap מקומית מול `npx decap-server` (פורט 8081) – מוסיף local_backend לתצורה בזמן ההגשה בלבד."""
+--local-cms: לבדיקת Decap מקומית מול `npx decap-server` (פורט 8081) – מוסיף local_backend לתצורה בזמן ההגשה בלבד.
+--mock-netlify: מדמה את Netlify Identity ו-Git Gateway (tests/mock_netlify.py) – לבדיקות מצב העריכה הוויזואלית."""
 import http.server, sys, tomllib, fnmatch
 LOCAL_CMS = '--local-cms' in sys.argv
+MOCK = None
+if '--mock-netlify' in sys.argv:
+    import os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import mock_netlify as MOCK
 args = [a for a in sys.argv[1:] if not a.startswith('--')]
 rules = tomllib.load(open('netlify.toml', 'rb')).get('headers', [])
 class H(http.server.SimpleHTTPRequestHandler):
@@ -19,7 +24,12 @@ class H(http.server.SimpleHTTPRequestHandler):
                 if LOCAL_CMS and path.startswith('/admin'): v = v.replace("connect-src 'self'", "connect-src 'self' http://localhost:8081")
             self.send_header(k, v)
         super().end_headers()
+    def do_POST(self):
+        if not (MOCK and MOCK.handle(self, 'POST')): self.send_error(405)
+    def do_PATCH(self):
+        if not (MOCK and MOCK.handle(self, 'PATCH')): self.send_error(405)
     def do_GET(self):
+        if MOCK and MOCK.handle(self, 'GET'): return
         if LOCAL_CMS and self.path.split('?')[0] == '/admin/config.yml':
             body = (open('admin/config.yml', encoding='utf-8').read() + '\nlocal_backend: true\n').encode()
             self.send_response(200); self.send_header('Content-Type', 'text/yaml; charset=utf-8'); self.send_header('Content-Length', str(len(body)))
