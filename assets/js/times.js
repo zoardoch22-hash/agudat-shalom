@@ -1,6 +1,7 @@
 // עמוד זמני התפילות: חישוב חי בדפדפן לפי התאריך הנוכחי בשעון ישראל
 import { ready, el } from './main.js';
 import { loadHebcal } from './hebcal-loader.js';
+import { loadMaor } from './maor-loader.js';
 import { computeDay, ymdInTz, addDays, nextShabbatYmd, makeLocation } from './schedule.js';
 import { renderDayList, dayChips, startClock } from './times-ui.js';
 
@@ -19,14 +20,15 @@ async function init() {
     $('today-list').replaceChildren(el('p', { class: 'error-box', text: 'לא ניתן היה לטעון את מנוע חישוב הזמנים. נסו לרענן את העמוד.' }));
     return;
   }
+  const maor = await loadMaor();
   const loc = makeLocation(hc, cfg);
-  $('loc-name').textContent = cfg.location.name;
+  const day = (ymd) => computeDay(hc, cfg, ymd, loc, maor);
 
   let today, tomorrow;
   const renderAll = () => {
     const ymd = ymdInTz(new Date(), tz);
-    today = computeDay(hc, cfg, ymd, loc);
-    tomorrow = computeDay(hc, cfg, addDays(ymd, 1), loc);
+    today = day(ymd);
+    tomorrow = day(addDays(ymd, 1));
     const now = new Date();
 
     $('hdate').textContent = today.hebrewDate;
@@ -39,12 +41,14 @@ async function init() {
     const zs = [zman('נץ החמה', z.sunriseStr), zman('שקיעה', z.sunsetStr)];
     if (z.candleStr) zs.push(zman('הדלקת נרות', z.candleStr));
     zs.push(zman(today.isShabbat ? 'צאת השבת' : (today.isYomTov ? 'צאת החג' : 'צאת הכוכבים'), z.tzeitStr));
+    if (z.rtStr) zs.push(zman('צאת ר"ת', z.rtStr));
     $('zmanim').replaceChildren(...zs);
+    $('zmanim-source').textContent = today.sourceLabel;
 
     // השבת הקרובה
     const shY = nextShabbatYmd(ymd);
-    const sh = computeDay(hc, cfg, shY, loc);
-    const fri = computeDay(hc, cfg, addDays(shY, -1), loc);
+    const sh = day(shY);
+    const fri = day(addDays(shY, -1));
     $('loc-candle').textContent = String(fri.zmanim.candleMinsBeforeSunset ?? '—');
     $('shabbat-title').textContent = sh.parasha || sh.holidays[0] || 'שבת קודש';
     $('shabbat-date').textContent = `${sh.hebrewDate} · ${sh.gregLabel}`;
@@ -56,7 +60,7 @@ async function init() {
 
     // תצוגת שבוע: היום + 6 הימים הבאים
     $('week').replaceChildren(...Array.from({ length: 7 }, (_, i) => {
-      const d = i === 0 ? today : computeDay(hc, cfg, addDays(ymd, i), loc);
+      const d = i === 0 ? today : day(addDays(ymd, i));
       const cls = ['day-card', i === 0 ? 'is-today' : '', d.shabbatMode ? 'is-shabbat' : ''].filter(Boolean).join(' ');
       const sub = [`נץ ${d.zmanim.sunriseStr}`, `שקיעה ${d.zmanim.sunsetStr}`];
       if (d.zmanim.candleStr) sub.push(`הדלקת נרות ${d.zmanim.candleStr}`);

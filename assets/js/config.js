@@ -38,19 +38,25 @@ export const CONFIG = {
     },
   },
 
-  // מיקום לחישוב הזמנים (ברירת מחדל: תל אביב)
+  // מקור הזמנים: לוח המאור (ישיבת אור החיים) – אופק תל אביב.
+  // הנץ (זריחה נראית), השקיעה, הדלקת הנרות וצאת השבת/החג נלקחים מ-assets/data/maor-tel-aviv.json
+  // (נוצר ע"י tools/scrape-maor.mjs). לתאריך שאין בו נתון – חישוב משוער מכויל (ראו schedule.js) עם הערה.
+  zmanimSource: {
+    label: 'לפי לוח המאור – אופק תל אביב',
+    url: 'https://maor.orhachaim.org/?cal_city=IL-Tel%20Aviv',
+  },
+
+  // מיקום לחישוב התאריך העברי/החגים ולחישוב הגיבוי (תל אביב)
   location: {
     name: 'תל אביב',        // שם לתצוגה
-    hebcalCity: 'Tel Aviv', // שם העיר באנגלית לפי hebcal (קובע את מנהג הדלקת הנרות בישראל)
+    hebcalCity: 'Tel Aviv', // שם העיר באנגלית לפי hebcal
     latitude: 32.0853,
     longitude: 34.7818,
-    elevation: 0,          // מטרים (בשימוש רק אם useElevation=true)
-    useElevation: false,   // false = נץ/שקיעה בגובה פני הים (המקובל בלוחות)
+    elevation: 0,
+    useElevation: false,   // הגיבוי: hebcal בגובה פני הים + תיקון "זריחה נראית" של לוח המאור
     tzid: 'Asia/Jerusalem',
-    // null = לפי מנהג העיר של hebcal (ירושלים 40, חיפה/זכרון יעקב 30, שאר ערי ישראל – כולל תל אביב – 20)
+    // הדלקת הנרות נלקחת מלוח המאור (20 דק' לפני השקיעה בתל אביב). הערך כאן משפיע רק על hebcal ולא על התצוגה.
     candleLightingMins: null,
-    havdalahDeg: 8.5,       // צאת השבת לפי hebcal (8.5° מתחת לאופק – ברירת המחדל)
-    havdalahMins: 0,        // אם > 0, צאת שבת = שקיעה + מספר דקות (במקום מעלות)
   },
 
   // 'auto' = קיץ כששעון הקיץ הישראלי בתוקף; אפשר לקבוע ידנית 'summer' או 'winter'
@@ -66,12 +72,17 @@ export const CONFIG = {
       minchaKetanaBeforeShkiaMins: 25,
       lessonBeforeMinchaMins: 60,      // קיץ: שיעור שעה לפני מנחה (קטנה)
     },
+    // ערב שבת (וערב חג): מנחה גדולה ושחרית כבחול
+    friday: {
+      minchaKetanaBeforeShkiaMins: 40, // ללא עיגול
+      kabbalatShabbatBeforeShkiaMins: 15,
+    },
     shabbat: {
       shacharit: '08:00',
       shacharitNote: 'מהודו',
       minchaGedola: { summer: '13:15', winter: '12:45' },
-      minchaKetanaBeforeShkiaMins: 50,
-      lessonBeforeMinchaKetanaMins: 60,
+      minchaKetanaBeforeShkiaMins: 50, // ואז עיגול: ספרה 0–4 מטה, 5 נשאר, 6–9 מעלה
+      lessonBeforeMinchaKetanaMins: 60, // שעה לפני מנחה קטנה המעוגלת
       lessonTeacher: 'הרב אליהו דוך שליט"א',
     },
   },
