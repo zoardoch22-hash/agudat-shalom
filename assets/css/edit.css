@@ -1,0 +1,77 @@
+/* מצב עריכה ויזואלית – נטען רק למנהל מחובר */
+html.ed-on body { padding-top: var(--ed-bar-h, 96px); }
+html.ed-on .site-header { top: var(--ed-bar-h, 96px); }
+
+.ed-bar {
+  position: fixed; top: 0; inset-inline: 0; z-index: 400;
+  background: #0a1a33; color: #fff; border-bottom: 3px solid #d9b84a;
+  padding: .45rem 1rem; box-shadow: 0 6px 20px -8px rgba(0, 0, 0, .5); font-size: .95rem;
+}
+.ed-bar-row { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; justify-content: space-between; max-width: 1280px; margin: 0 auto; }
+.ed-bar-row + .ed-bar-row { margin-top: .35rem; }
+.ed-title { margin: 0; }
+.ed-title strong { color: #ffd23f; font-size: 1.05rem; }
+.ed-sub { color: #dfe5ef; font-size: .88rem; }
+.ed-bar-actions, .ed-fmt { display: flex; flex-wrap: wrap; gap: .4rem; }
+.ed-btn, .ed-fbtn {
+  font: inherit; min-height: 40px; padding: .3rem .9rem; border-radius: 999px; cursor: pointer;
+  border: 2px solid #d9b84a; background: transparent; color: #fff;
+}
+.ed-fbtn { min-height: 36px; padding: .2rem .75rem; border-radius: 8px; border-color: #8fa3c4; font-size: .88rem; }
+.ed-fbtn[aria-disabled="true"] { opacity: .55; cursor: not-allowed; }
+.ed-btn-save { background: #d9b84a; color: #0a1a33; font-weight: 700; }
+.ed-btn:disabled { background: transparent; color: #b9c3d3; border-color: #6f7f99; cursor: not-allowed; }
+.ed-btn:not(:disabled):hover, .ed-fbtn:not([aria-disabled="true"]):hover { background: #ffd23f; color: #0a1a33; }
+.ed-bar :focus-visible { outline: 3px solid #ffd23f; outline-offset: 2px; box-shadow: none; }
+.ed-status { margin: 0; flex: 1 1 260px; color: #fff; font-size: .9rem; }
+.ed-status.is-ok { color: #8ef0b8; font-weight: 700; }
+.ed-status.is-warn { color: #ffe08a; }
+.ed-status.is-error { color: #ffb4b4; font-weight: 700; }
+.ed-file { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+
+/* שדות הניתנים לעריכה */
+html.ed-on .ed-field { outline: 2px dashed transparent; outline-offset: 3px; border-radius: 4px; cursor: text; transition: outline-color .15s; min-height: 1.2em; }
+html.ed-on .ed-field:hover { outline-color: #c9a227; background-color: rgba(255, 210, 63, .12); }
+html.ed-on .ed-field:focus { outline: 3px solid #c9a227; outline-offset: 3px; box-shadow: 0 0 0 6px rgba(255, 210, 63, .35); background-color: rgba(255, 255, 255, .06); }
+html.ed-on .ed-field.ed-dirty { outline: 2px solid #1f7a4d; outline-offset: 3px; }
+html.ed-on .ed-field:empty::before { content: attr(data-ed-ph); color: #8a8f99; font-style: italic; }
+html.ed-on .ed-field:empty:not([data-ed-ph])::before { content: '(ריק – לחצו כדי לכתוב)'; }
+html.ed-on .ed-rich img { outline: 2px dashed #c9a227; cursor: pointer; }
+html.ed-on .ed-field a { cursor: text; }
+
+.ed-url { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin: .5rem 0; padding: .5rem .7rem; border: 2px dashed #c9a227; border-radius: 10px; background: #fffbe9; color: #1d2433; font-size: .92rem; }
+.ed-url.ed-dirty { border-style: solid; border-color: #1f7a4d; }
+.ed-url-input { flex: 1 1 220px; font: inherit; padding: .35rem .5rem; border: 1px solid #5d6677; border-radius: 6px; }
+
+.ed-computed { margin: .4rem 0; padding: .55rem .8rem; border-inline-start: 4px solid #c9a227; background: #fff8dc; color: #1d2433; border-radius: 8px; font-size: .92rem; }
+.ed-computed a { color: #16335f; font-weight: 700; text-decoration: underline; }
+html.ed-on .ed-computed-area { outline: 2px dotted #8a8f99; outline-offset: 4px; border-radius: 6px; }
+
+/* כפתור "עריכת העמוד" */
+.ed-pill {
+  position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%); z-index: 260;
+  font: inherit; font-weight: 700; padding: .55rem 1.2rem; border-radius: 999px; cursor: pointer;
+  background: #0a1a33; color: #ffd23f; border: 2px solid #d9b84a; box-shadow: 0 8px 20px -8px rgba(0, 0, 0, .5);
+}
+.ed-pill:hover { background: #16335f; }
+
+/* חלונות */
+.ed-dialog { border: 0; border-radius: 16px; padding: 0; max-width: min(440px, 92vw); width: 100%; color: #1d2433; box-shadow: 0 20px 50px -10px rgba(0, 0, 0, .5); }
+.ed-dialog::backdrop { background: rgba(10, 26, 51, .6); }
+.ed-form { display: flex; flex-direction: column; gap: .45rem; padding: 1.4rem 1.5rem; text-align: right; }
+.ed-form h2 { margin: 0 0 .3rem; font-size: 1.4rem; }
+.ed-form label { font-weight: 700; margin-top: .35rem; }
+.ed-form input { font: inherit; padding: .55rem .7rem; border: 1px solid #5d6677; border-radius: 8px; }
+.ed-actions { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .6rem; }
+.ed-actions-col { flex-direction: column; }
+.ed-actions-col .btn { justify-content: center; }
+.ed-note { margin: 0; color: #1d2433; }
+.ed-small { margin: .3rem 0 0; font-size: .88rem; color: #4a5160; }
+.ed-error { margin: 0; color: #a3121a; font-weight: 700; min-height: 1.2em; }
+
+html.a11y-contrast .ed-bar, html.a11y-contrast .ed-dialog, html.a11y-contrast .ed-url, html.a11y-contrast .ed-computed { border: 2px solid #ffff00 !important; }
+@media (max-width: 640px) {
+  .ed-sub { display: none; }
+  .ed-btn { min-height: 38px; padding: .25rem .7rem; font-size: .88rem; }
+}
+@media (forced-colors: active) { .ed-field:focus, .ed-field:hover { outline: 2px solid CanvasText; } }
