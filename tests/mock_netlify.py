@@ -13,7 +13,8 @@ S = {}
 def reset():
     S.clear()
     S.update(access={}, refresh={}, blobs={}, trees={'t0': {}}, commits={'c0': {'tree': 't0', 'parents': [], 'message': 'initial'}},
-             head='c0', log=[], race=False, fail=None, n=0, ttl=3600)
+             head='c0', log=[], race=False, fail=None, n=0, ttl=3600,
+             password=PASSWORD, used_tokens=set())
 reset()
 
 def b64url(b): return base64.urlsafe_b64encode(b).rstrip(b'=').decode()
@@ -95,15 +96,47 @@ def handle(h, method):
             f = urllib.parse.parse_qs(raw.decode())
             g = (f.get('grant_type') or [''])[0]
             if g == 'password':
-                if (f.get('username') or [''])[0].lower() == EMAIL and (f.get('password') or [''])[0] == PASSWORD: return send(200, issue())
+                if (f.get('username') or [''])[0].lower() == EMAIL and (f.get('password') or [''])[0] == S.get('password', PASSWORD): return send(200, issue())
                 return send(400, {'error': 'invalid_grant', 'error_description': 'Invalid Password'})
             if g == 'refresh_token':
                 r = (f.get('refresh_token') or [''])[0]
                 if S['refresh'].pop(r, None): return send(200, issue())
                 return send(400, {'error': 'invalid_grant', 'error_description': 'Invalid Refresh Token'})
             return send(400, {'error': 'unsupported_grant_type'})
+        if path == '/.netlify/identity/verify' and method == 'POST':
+            d = body()
+            typ = (d.get('type') or '').strip()
+            tok = (d.get('token') or '').strip()
+            pw = d.get('password') or ''
+            # GoTrue accepts signup|recovery; invite is aliased to signup (gotrue-js acceptInvite).
+            if typ == 'invite': typ = 'signup'
+            if typ not in ('signup', 'recovery'):
+                return send(422, {'msg': 'Verify requires a verification type'})
+            if not tok:
+                return send(422, {'msg': 'Verify requires a token'})
+            if tok == 'expired-token' or tok in S['used_tokens']:
+                return send(422, {'msg': 'Recovery token expired' if typ == 'recovery' else 'Confirmation token expired'})
+            if tok in ('invalid-token', 'missing'):
+                return send(404, {'msg': 'User not found'})
+            # טוקנים תקינים לבדיקה: valid-recovery / valid-invite / valid-confirm (או כל מחרוזת אחרת שאינה expired/invalid)
+            if pw and len(pw) < 6:
+                return send(422, {'msg': 'Password too short'})
+            if typ == 'signup' and not pw and tok.startswith('valid-invite'):
+                return send(422, {'msg': 'Invited users must specify a password'})
+            if pw:
+                S['password'] = pw
+            S['used_tokens'].add(tok)
+            return send(200, issue())
         if path == '/.netlify/identity/user':
-            return send(200, USER) if authed() else send(401, {'msg': 'Invalid token'})
+            if not authed(): return send(401, {'msg': 'Invalid token'})
+            if method == 'PUT':
+                d = body()
+                if 'password' in d:
+                    pw = d.get('password') or ''
+                    if len(pw) < 6: return send(422, {'msg': 'Password too short'})
+                    S['password'] = pw
+                return send(200, USER)
+            return send(200, USER)
         if path == '/.netlify/identity/logout': return send(204)
         if path == '/.netlify/identity/settings': return send(200, {'external': {}, 'disable_signup': True, 'autoconfirm': False})
         # ----- Git Gateway -----

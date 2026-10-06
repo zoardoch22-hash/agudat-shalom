@@ -26,6 +26,8 @@ class H(http.server.SimpleHTTPRequestHandler):
         super().end_headers()
     def do_POST(self):
         if not (MOCK and MOCK.handle(self, 'POST')): self.send_error(405)
+    def do_PUT(self):
+        if not (MOCK and MOCK.handle(self, 'PUT')): self.send_error(405)
     def do_PATCH(self):
         if not (MOCK and MOCK.handle(self, 'PATCH')): self.send_error(405)
     def do_GET(self):
