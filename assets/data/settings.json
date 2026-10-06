@@ -40,5 +40,31 @@
     "longitude": 34.7818,
     "candleLightingMins": null
   },
-  "season": "auto"
+  "season": "auto",
+  "rules": {
+    "weekday": {
+      "shacharitBeforeNetzMins": 40,
+      "minchaGedola": {
+        "summer": "13:15",
+        "winter": "12:30"
+      },
+      "minchaKetanaBeforeShkiaMins": 25,
+      "lessonBeforeMinchaMins": 60
+    },
+    "friday": {
+      "minchaKetanaBeforeShkiaMins": 40,
+      "kabbalatShabbatBeforeShkiaMins": 15
+    },
+    "shabbat": {
+      "shacharit": "08:00",
+      "shacharitNote": "מהודו",
+      "minchaGedola": {
+        "summer": "13:15",
+        "winter": "12:45"
+      },
+      "minchaKetanaBeforeShkiaMins": 50,
+      "lessonBeforeMinchaKetanaMins": 60,
+      "lessonTeacher": "הרב אליהו דוך שליט\"א"
+    }
+  }
 }
